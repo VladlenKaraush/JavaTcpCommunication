@@ -1,3 +1,5 @@
+import models.Description;
+import models.Word;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -6,7 +8,7 @@ import org.hibernate.criterion.Restrictions;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HibernateUtil {
+class HibernateUtil {
 
     private static final SessionFactory sessionFactory = buildSessionFactory();
 
@@ -25,12 +27,19 @@ public class HibernateUtil {
         return sessionFactory;
     }
 
-    public static void shutdown() {
+    static void shutdown() {
         // Close caches and connection pools
         getSessionFactory().close();
     }
 
     static MessageCode addNewWord(Session session, Message message){
+
+        Word checkWord = (Word) session.createCriteria(Word.class)
+                .add(Restrictions.eq("word",message.getStringList().get(0))).uniqueResult();
+
+        if(checkWord != null)
+            return MessageCode.WORD_ALREADY_EXISTS;
+
         Word word = new Word();
         Description description = new Description();
 
@@ -71,7 +80,9 @@ public class HibernateUtil {
             return MessageCode.WORD_NOT_FOUND;
 
         word.setWord(message.getStringList().get(1));
-        word.getDescription().setDescription(message.getStringList().get(2));
+
+        if (message.getStringList().size() > 2)
+            word.getDescription().setDescription(message.getStringList().get(2));
 
         session.update(word);
 

@@ -12,30 +12,30 @@ public class Message {
         this.messageCode = messageCode;
     }
 
-    public MessageCode getMessageCode() {
+    MessageCode getMessageCode() {
         return messageCode;
     }
 
-    public void setMessageCode(MessageCode messageCode) {
+    void setMessageCode(MessageCode messageCode) {
         this.messageCode = messageCode;
     }
 
-    public Message() {
+    Message() {
     }
 
-    public List<String> getStringList() {
+    List<String> getStringList() {
         return stringList;
     }
 
-    public void setStringList(List<String> stringList) {
+    void setStringList(List<String> stringList) {
         this.stringList = stringList;
     }
 
-    public MessageType getMessageType() {
+    MessageType getMessageType() {
         return messageType;
     }
 
-    public void setMessageType(MessageType messageType) {
+    void setMessageType(MessageType messageType) {
         this.messageType = messageType;
     }
 }

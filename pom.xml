@@ -23,6 +23,7 @@
     <modules>
         <module>TcpServer</module>
         <module>TcpClient</module>
+        <module>TcpUtils</module>
     </modules>
 
     <dependencies>

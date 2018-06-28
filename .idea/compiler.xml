@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="TcpClient" />
         <module name="TcpServer" />
+        <module name="TcpUtils" />
       </profile>
     </annotationProcessing>
   </component>

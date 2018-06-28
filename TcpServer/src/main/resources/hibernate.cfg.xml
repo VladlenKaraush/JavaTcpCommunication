@@ -31,7 +31,7 @@
         <property name="hibernate.connection.username">springuser</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
          -->
-        <mapping class="Word"/>
-        <mapping class="Description"/>
+        <mapping class="models.Word"/>
+        <mapping class="models.Description"/>
     </session-factory>
 </hibernate-configuration>

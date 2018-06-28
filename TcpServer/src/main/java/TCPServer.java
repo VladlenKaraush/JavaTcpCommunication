@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.Description;
 import org.hibernate.Session;
 
 import java.io.BufferedReader;
@@ -20,12 +21,13 @@ class TCPServer {
 
         //initialize hibernate session
         Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
+
         Socket connectionSocket = welcomeSocket.accept();
 
 
         while (serverUp) {
 
+            session.beginTransaction();
             //connect to client
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
@@ -43,6 +45,7 @@ class TCPServer {
             //construct reply
             Message reply = new Message();
             reply.setMessageType(msg.getMessageType());
+            reply.setStringList(msg.getStringList());
 
             switch(msg.getMessageType()){
 
@@ -52,7 +55,7 @@ class TCPServer {
                     break;
 
                 case FETCH_DESCRIPTION_BY_WORD:
-                    Description  description = HibernateUtil.fetchDescriptionByWord(session, msg);
+                    Description description = HibernateUtil.fetchDescriptionByWord(session, msg);
                     System.out.println("fetched description - " + description.getDescription());
                     reply.setMessageCode(MessageCode.OK);
                     reply.setStringList(new ArrayList<>(Collections.singletonList(description.getDescription())));
@@ -85,7 +88,8 @@ class TCPServer {
                     break;
 
                 default:
-                    throw new IllegalArgumentException("message type wasn't recognised");
+                    reply.setMessageCode(MessageCode.ERROR);
+                    //throw new IllegalArgumentException("message type wasn't recognised");
             }
 
             //send reply
@@ -93,5 +97,7 @@ class TCPServer {
             outToClient.writeBytes(jsonInString);
 
         }
+        session.getTransaction();
+
     }
 }

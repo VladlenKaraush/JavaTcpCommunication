@@ -12,7 +12,7 @@ class TCPClient {
 
     /**
      * example of api usage
-     * @throws Exception
+     * @throws Exception - SocketException
      */
     private static void testApi() throws Exception {
         Socket clientSocket = new Socket("localhost", 8000);
@@ -106,6 +106,9 @@ class TCPClient {
                 message.setStringList(new ArrayList<>(Collections.singletonList(args[1])));
                 break;
 
+            case END_CONNECTION:
+                break;
+
              default:
                  System.out.println("Command wasn't recognised");
                  throw new IllegalArgumentException("Command wasn't recognised");
@@ -118,6 +121,16 @@ class TCPClient {
     public static void main(String argv[]) throws Exception {
 
         //testApi();
+        String help = "manual how to use api:\n" +
+                "1. add new word - N 'word' 'description'(optional)\n" +
+                "2. update existing word - U 'existing word' 'new word' 'description'(optional)\n" +
+                "3. delete word - D 'word'\n" +
+                "4. fetch description of a word - F 'word'\n" +
+                "5. fetch words fitting mask(? for 1 arbitrary symbol, * for any number of arbitrary symbols) - S - 'mask'\n" +
+                "6. shutdown server - E\n" +
+                "7. shutdown client - q\n";
+
+        System.out.println(help);
 
         //socket on 8000 port
         Socket clientSocket = new Socket("localhost", 8000);
@@ -133,7 +146,8 @@ class TCPClient {
         ObjectMapper mapper = new ObjectMapper();
 
         String input = inFromUser.readLine();
-        while(!input.equals("q")){
+        boolean run = true;
+        while(!input.equals("q") && run){
 
             Message message = constructMessage(input);
 
@@ -145,6 +159,10 @@ class TCPClient {
             //System.out.println(answer);
             Message messageAnswer = mapper.readValue(answer, Message.class);
 
+            if (messageAnswer.getMessageCode() == MessageCode.WORD_ALREADY_EXISTS)
+                System.out.println("word  \'" + messageAnswer.getStringList().get(0) + "\' already exists");
+            else
+                System.out.println(messageAnswer.getMessageCode());
             //output requested words
             if(messageAnswer.getMessageType() == MessageType.SEARCH_FOR_WORD_BY_MASK)
             {
@@ -158,6 +176,8 @@ class TCPClient {
             {
                 System.out.println(messageAnswer.getStringList().get(0));
             }
+            else if(messageAnswer.getMessageType() == MessageType.END_CONNECTION)
+                run = false;
 
             input = inFromUser.readLine();
         }
